@@ -67,3 +67,5 @@ Sonraki adımda `Product` modeli için:
 - `id`, `name`, `description`, `price`, `stock`, `is_active`, `created_at`
 alanlarıyla modeli oluşturup,
 - ürün listeleme/ekleme/getirme/güncelleme/silme endpoint’lerini yazacağız.
+
+
