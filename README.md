@@ -1,4 +1,4 @@
-# python_eticaret
+# PYTHON- E-TİCARET
 
 Python dili kullanarak geliştirilmiş bir e-ticaret API projesi.
 
@@ -10,7 +10,7 @@ Bu aşamada **FastAPI + SQLAlchemy + Pydantic** üçlüsüyle başlamak en doğr
 - **SQLAlchemy**: Veritabanı katmanını modüler ve yönetilebilir tutar.
 - **Pydantic**: İstek/yanıt doğrulamasını güvenli ve net hale getirir.
 
-## 2) Önerilen klasör yapısı
+## 2) Klasör yapısı
 
 ```text
 python_eticaret/
