@@ -6,12 +6,22 @@ from .serializers import ProductSerializer
 from rest_framework.response import Response  
 
 #default get requesti bunlar. 
-@api_view()
+@api_view(['GET', 'POST'])
 def product_list(request):
-    products= Product.objects.all()
-    serializer = ProductSerializer(products, many=True) #products liste olarak geliyor
-    return Response(serializer.data)
 
+    if request.method== 'GET':
+        products= Product.objects.all()
+        serializer = ProductSerializer(products, many=True) #products liste olarak geliyor
+        return Response(serializer.data)
+    if request.method=='POST':
+        serializer= ProductSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors)
+
+   
 @api_view()
 def product_details(request, pk):
     product= Product.objects.get(pk=pk)
