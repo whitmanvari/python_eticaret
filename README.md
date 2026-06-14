@@ -1,71 +1,39 @@
-# PYTHON- E-TİCARET
+# PYTHON- E-TİCARET API
 
-Python dili kullanarak geliştirilmiş bir e-ticaret API projesi.
+Django ve Django REST Framework merkezli, modüler yapıya sahip e-ticaret API'si. Proje, asenkron ve yüksek performanslı işlemler için FastAPI altyapısını da barındırmaktadır.
 
-## 1) Ürün yönetimi için başlangıç mimarisi
+## Özellikler
 
-Bu aşamada **FastAPI + SQLAlchemy + Pydantic** üçlüsüyle başlamak en doğru ve temiz yaklaşım olur:
+* Modüler mimari: Ürünler, siparişler, kategoriler, kullanıcılar ve yorumlar için izole edilmiş uygulamalar.
+* DRF Serializer seviyesinde gelişmiş veri doğrulama (negatif stok engelleme, fiyat sınırlandırması, regex ile slug format kontrolü).
+* Temel ürün yönetimi için RESTful uç noktalar (GET, POST, PUT).
 
-- **FastAPI**: Hızlı, tip güvenli ve dokümantasyonu otomatik üretir.
-- **SQLAlchemy**: Veritabanı katmanını modüler ve yönetilebilir tutar.
-- **Pydantic**: İstek/yanıt doğrulamasını güvenli ve net hale getirir.
+## Temel Teknolojiler
 
-## 2) Klasör yapısı
+* Django 6.0.6 & Django REST Framework
+* FastAPI, Uvicorn, Pydantic
+* SQLite3, SQLAlchemy, Alembic
 
-```text
-python_eticaret/
-├── app/
-│   ├── core/
-│   │   ├── config.py
-│   │   └── database.py
-│   ├── models/
-│   │   └── product.py
-│   ├── schemas/
-│   │   └── product.py
-│   ├── crud/
-│   │   └── product.py
-│   ├── api/
-│   │   └── v1/
-│   │       ├── endpoints/
-│   │       │   └── products.py
-│   │       └── router.py
-│   └── main.py
-├── requirements.txt
-└── README.md
-```
+## Kurulum ve Çalıştırma
 
-Bu yapı ile sorumluluklar ayrılır:
-- `models`: Veritabanı tabloları
-- `schemas`: API giriş/çıkış modelleri
-- `crud`: Veritabanı işlemleri
-- `api`: Endpoint ve route yönetimi
-- `core`: Ayarlar ve DB bağlantısı
-
-## 3) Kurulacak kütüphaneler
-
-`requirements.txt` dosyasındaki temel paketler:
-
-- `fastapi`
-- `uvicorn[standard]`
-- `sqlalchemy`
-- `pydantic`
-- `alembic`
-- `python-dotenv`
-
-## 4) Kurulum adımları
+Geliştirme ortamını hazırlamak için terminalinizde sırasıyla şu komutları çalıştırabilirsiniz:
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\\Scripts\\activate
-pip install --upgrade pip
+python3 -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
+python manage.py makemigrations
+python manage.py migrate
 ```
 
-## 5) Sonraki adım
+Sunucuları başlatmak için ise şu komutları kullanabilirsiniz:
 
-Sonraki adımda `Product` modeli için:
-- `id`, `name`, `description`, `price`, `stock`, `is_active`, `created_at`
-alanlarıyla modeli oluşturup,
-- ürün listeleme/ekleme/getirme/güncelleme/silme endpoint’lerini yazacağız.
+**Django Servisi:**
+```bash
+python manage.py runserver
+```
 
-
+**FastAPI Servisi:**
+```bash
+uvicorn main:app --reload
+```
