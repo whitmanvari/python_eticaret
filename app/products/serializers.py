@@ -2,16 +2,17 @@ from rest_framework import serializers
 from .models import Product
 from rest_framework.validators import UniqueValidator
 from categories.models import Category
+from comments.serializers import CommentSerializer
 import re
 
-class ProductSerializer(serializers.Serializer):
-    id= serializers.IntegerField(read_only=True) #formdan okuyabildiklerimi güncelleyemeyeceğim
-    name = serializers.CharField(max_length=200, validators=[UniqueValidator(queryset=Product.objects.all())])
-    price= serializers.DecimalField(max_digits=10,decimal_places=2)
-    stock= serializers.IntegerField()
-    description = serializers.CharField(required=False, allow_blank=True, allow_null=True)
-    slug = serializers.SlugField(validators=[UniqueValidator(queryset=Product.objects.all())])
-    category = serializers.PrimaryKeyRelatedField(queryset= Category.objects.all())
+class ProductSerializer(serializers.ModelSerializer):
+    comments = CommentSerializer(read_only=True, many=True)
+    name = serializers.CharField(max_length=200, validators= [UniqueValidator(queryset=Product.objects.all())])
+    slug = serializers.CharField(validators= [UniqueValidator(queryset=Product.objects.all())])
+    class Meta:
+        model = Product
+        #fields = "__all__" commentsi kapsamaz, eklemek için manuel yazabiliriz
+        fields=['id', 'name', 'description', 'price', 'stock', 'slug', 'category', 'comments']
 
     def validate_name(self, value):
         if len(value.strip()) < 3:
