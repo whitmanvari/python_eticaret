@@ -6,7 +6,7 @@ from .serializers import CommentSerializer
 #from rest_framework import mixins
 
 #ListAPIView(mixins.ListModelMixin.GenericAPIView)---> list api view aslında mixins'in Listmodelmixin'inin generic api view'indne türemiştir. Mixin kullanmadan direkt yazılabiliyor.
-class CommentListView(generics.ListAPIView):
+class CommentListView(generics.ListCreateAPIView):
     queryset=Comment.objects.all()
     serializer_class= CommentSerializer
 
@@ -15,8 +15,14 @@ class CommentListView(generics.ListAPIView):
         return self.list(request, *args, **kwargs)
     #çift yıldız dictionarye koy, tek yıldız tuple olarak al """
 
-class CommentListByProductView(generics.ListAPIView):
+class CommentListByProductView(generics.ListCreateAPIView):
     serializer_class= CommentSerializer
+
+    #aslında url'den direkt id'yi alıyor burada. Örneğin comments/1/product şeklinde bir url'de keyword args aracılığı ile
+    #kwargs--> url'den 1 bilgiini alıyor bu da zaten product_id. Save ederken bu product_id'yi gönderirsek o product özelinde çalışacak. 
+    def perform_create(self, serializer):
+        product_id= self.kwargs.get('pk')
+        serializer.save(product_id=product_id)
 
     def get_queryset(self):
         pk=self.kwargs['pk']
