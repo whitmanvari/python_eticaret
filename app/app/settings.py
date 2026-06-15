@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'categories',
     'users',
     'comments',
-    'rest_framework'
+    'rest_framework',
+    'rest_framework.authtoken'
 ]
 
 MIDDLEWARE = [
@@ -126,9 +127,6 @@ AUTH_USER_MODEL= "users.CustomUser"
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication', # CSRF istemez
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny', # Herkese açık
-    ],
+        'rest_framework.authentication.TokenAuthentication',
+    ]
 }
