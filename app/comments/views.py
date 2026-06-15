@@ -28,7 +28,12 @@ class CommentListByProductView(generics.ListCreateAPIView):
         pk=self.kwargs['pk']
         return Comment.objects.filter(product_id=pk)
     
-class CommentDetailsView(generics.RetrieveAPIView):
+#get, put ve patch
+class CommentDetailsView(generics.RetrieveUpdateAPIView):
+    queryset=Comment.objects.all()
+    serializer_class= CommentSerializer
+
+class CommentDeleteView(generics.DestroyAPIView):
     queryset=Comment.objects.all()
     serializer_class= CommentSerializer
 
