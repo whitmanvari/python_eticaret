@@ -4,8 +4,11 @@ from .models import Category
 from .serializers import CategorySerializer
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 class CategoryListAV(APIView):
+
+    #permission_classes=[IsAdminUser]
 
     def get(self, request):
         categories= Category.objects.all()
@@ -13,6 +16,8 @@ class CategoryListAV(APIView):
         return Response(serializer.data)
 
     def post(self, request):
+        if not request.user.is_superuser:
+            return Response({'Error: Authentication credentials were not provided.'}, status=status.HTTP_401_UNAUTHORIZED)
         serializer = CategorySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
