@@ -20,20 +20,20 @@ class ProductSerializer(serializers.ModelSerializer):
         return value
     
     def validate_price(self, value):
-        if value <0:
+        if value < 0:
             raise serializers.ValidationError("Price must be greater than 0.")
-        if value >1000000:
+        if value > 1000000:
             raise serializers.ValidationError("Price seems unusually high.")
         return value
     
     def validate_stock(self, value):
-        if value<0:
+        if value < 0:
             raise serializers.ValidationError("Stock can not be negative.")
         return value
     
     def validate_slug(self, value):
         if not re.match(r'^[a-z0-9\-]+$', value):
-            raise serializers.ValidationError("SLug must be lower case and only contains hyphens and alphanumeric characters.")
+            raise serializers.ValidationError("Slug must be lower case and only contains hyphens and alphanumeric characters.")
         return value
     
     def validate(self, data):

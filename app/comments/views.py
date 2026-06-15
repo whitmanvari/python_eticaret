@@ -5,7 +5,8 @@ from .models import Comment
 from .serializers import CommentSerializer
 from rest_framework import mixins
 
-class CommentListView(generics.GenericAPIView, mixins.ListModelMixin):
+#ListAPIView(mixins.ListModelMixin.GenericAPIView)---> list api view aslında mixins'in Listmodelmixin'inin generic api view'indne türemiştir. Mixin kullanmadan direkt yazılabiliyor. 
+class CommentListView(generics.ListAPIView):
     queryset=Comment.objects.all()
     serializer_class= CommentSerializer
 
