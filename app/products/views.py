@@ -1,8 +1,58 @@
 from .models import Product
-from rest_framework.decorators import api_view
-from .serializers import ProductSerializer
+from rest_framework.decorators import api_view, permission_classes
+from .serializers import ProductSerializer, ProductListSerializer, ProductDetailsSerializer
 from rest_framework.response import Response
 from rest_framework import status  
+from rest_framework.permissions import IsAdminUser
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def admin_list_products(request):
+    """Admin: List all products"""
+    products= Product.objects.all()
+    serializer = ProductListSerializer(products, many=True) #products liste olarak geliyor
+    return Response(serializer.data) #200 ok
+    
+@api_view(['GET'])
+def catalog_list_products(request):
+    """Catalog: List all products"""
+    products= Product.objects.filter(stock__gt =0) #greater than 0
+    serializer = ProductListSerializer(products, many=True) 
+    return Response(serializer.data) 
+
+@api_view(['GET'])
+def catalog_product_details(request, pk):
+
+    try:
+        product= Product.objects.get(pk=pk)
+    except Product.DoesNotExist:
+        return Response('Error: Product not found.', status=status.HTTP_404_NOT_FOUND) # 404 not found yani aradığın id yok diyebiliriz.
+
+    serializer = ProductDetailsSerializer(product) 
+    return Response(serializer.data)
+    
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def admin_product_details(request, pk):
+
+    try:
+        product= Product.objects.get(pk=pk)
+    except Product.DoesNotExist:
+        return Response('Error: Product not found.', status=status.HTTP_404_NOT_FOUND) 
+    
+    serializer = ProductDetailsSerializer(product) 
+    return Response(serializer.data)
+
+
+@api_view(['POST'])
+def admin_create_product(request):
+    serializer= ProductSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED) #Bir veri karşı tarafa yüklendi, post oldu 201.  
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) #post hatası varsa status 400 bad request.
+        
 
 #default get requesti bunlar. 
 @api_view(['GET', 'POST'])

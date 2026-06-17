@@ -4,15 +4,38 @@ from rest_framework.validators import UniqueValidator
 from categories.models import Category
 from comments.serializers import CommentSerializer
 import re
+from categories.serializers import CategorySerializer
 
-class ProductSerializer(serializers.ModelSerializer):
-    comments = CommentSerializer(read_only=True, many=True)
-    name = serializers.CharField(max_length=200, validators= [UniqueValidator(queryset=Product.objects.all())])
-    slug = serializers.CharField(validators= [UniqueValidator(queryset=Product.objects.all())])
+
+class ProductListSerializer(serializers.ModelSerializer):
+    category=CategorySerializer()
     class Meta:
         model = Product
         #fields = "__all__" commentsi kapsamaz, eklemek için manuel yazabiliriz
-        fields=['id', 'name', 'description', 'price', 'stock', 'slug', 'category', 'comments']
+        fields=['id', 'name', 'price', 'stock', 'slug', 'category']
+
+class ProductDetailsSerializer(serializers.ModelSerializer):
+    category=CategorySerializer()
+    comments= CommentSerializer(many=True, read_only=True)
+    class Meta:
+        model = Product
+        #fields = "__all__" commentsi kapsamaz, eklemek için manuel yazabiliriz
+        fields=['id', 'name','description', 'price', 'stock', 'slug', 'category', 'comments']
+
+class ProductSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(max_length=200, validators= [UniqueValidator(queryset=Product.objects.all())])
+    slug = serializers.CharField(validators= [UniqueValidator(queryset=Product.objects.all())])
+    category= serializers.PrimaryKeyRelatedField(
+        queryset=Category.objects.all(),
+        error_messages={
+            'does_not_exist': "The selected category is not available. ",
+            'incorrect_type': "The selected category id is invalid. ",
+        }
+    )
+    class Meta:
+        model = Product
+        #fields = "__all__" commentsi kapsamaz, eklemek için manuel yazabiliriz
+        fields=['id', 'name', 'description', 'price', 'stock', 'slug', 'category']
 
     def validate_name(self, value):
         if len(value.strip()) < 3:
