@@ -43,7 +43,7 @@ def admin_product_details(request, pk):
     serializer = ProductDetailsSerializer(product) 
     return Response(serializer.data)
 
-
+#admin_create_product
 @api_view(['POST'])
 def admin_create_product(request):
     serializer= ProductSerializer(data=request.data)
@@ -71,7 +71,18 @@ def product_list(request):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) #post hatası varsa status 400 bad request.
 
-   
+@api_view(['PUT'])
+@permission_classes([IsAdminUser])
+def admin_edit_product(request, pk):
+
+    product= Product.objects.get(pk=pk)
+    serializer = ProductSerializer(product,data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+
 @api_view(['GET', 'PUT'])
 def product_details(request, pk):
 
@@ -92,6 +103,18 @@ def product_details(request, pk):
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) #post hatası varsa status 400 bad request.
+
+ 
+@api_view(['DELETE'])
+@permission_classes([IsAdminUser])
+def admin_delete_product(request, pk):
+
+    try:
+        product= Product.objects.get(pk=pk)
+    except Product.DoesNotExist:
+        return Response({'Error': 'Product not found.'}, status=404) # 404 not found yani aradığın id yok diyebiliriz.
+    product.delete()
+    return Response({'message': 'Product Deleted'}, status=status.HTTP_204_NO_CONTENT)
 
 
 #SERILIZATION

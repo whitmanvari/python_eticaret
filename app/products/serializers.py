@@ -24,7 +24,6 @@ class ProductDetailsSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     name = serializers.CharField(max_length=200, validators= [UniqueValidator(queryset=Product.objects.all())])
-    slug = serializers.CharField(validators= [UniqueValidator(queryset=Product.objects.all())])
     category= serializers.PrimaryKeyRelatedField(
         queryset=Category.objects.all(),
         error_messages={
@@ -55,6 +54,13 @@ class ProductSerializer(serializers.ModelSerializer):
         return value
     
     def validate_slug(self, value):
+        if self.instance is None:
+            if Product.objects.filter(slug=value).exists():
+                raise serializers.ValidationError("Slug must be unique!")
+        else:
+            if Product.objects.filter(slug=value).exclude(pk = self.instance.pk).exists():
+                raise serializers.ValidationError("Slug must be unique!")
+
         if not re.match(r'^[a-z0-9\-]+$', value):
             raise serializers.ValidationError("Slug must be lower case and only contains hyphens and alphanumeric characters.")
         return value
