@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from .models import Category
-from .serializers import CategorySerializer
+from .serializers import CategorySerializer, CategoryListSerializer, CategoryDetailsSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -11,7 +11,7 @@ class CatalogCategoryList(APIView):
 
     def get(self, request):
         categories= Category.objects.all()
-        serializer = CategorySerializer(categories, many=True)
+        serializer = CategoryListSerializer(categories, many=True)
         return Response(serializer.data)
         
 
@@ -20,7 +20,7 @@ class AdminCategoryList(APIView):
 
     def get(self, request):
         categories= Category.objects.all()
-        serializer = CategorySerializer(categories, many=True)
+        serializer = CategoryListSerializer(categories, many=True)
         return Response(serializer.data)
 
 
@@ -30,7 +30,7 @@ class CatalogCategoryDetails(APIView):
             category= Category.objects.get(pk=pk)
         except Category.DoesNotExist:
             return Response('Error: Category not found.', status=404)
-        serializer= CategorySerializer(category)
+        serializer= CategoryDetailsSerializer(category)
         return Response(serializer.data)
     
 class AdminCategoryDetails(APIView):
@@ -41,7 +41,7 @@ class AdminCategoryDetails(APIView):
             category= Category.objects.get(pk=pk)
         except Category.DoesNotExist:
             return Response('Error: Category not found.', status=404)
-        serializer= CategorySerializer(category)
+        serializer= CategoryDetailsSerializer(category)
         return Response(serializer.data)
 
 class AdminCategoryCreate(APIView):

@@ -1,4 +1,5 @@
 from .models import Product
+from .models import Category
 from rest_framework.decorators import api_view, permission_classes
 from .serializers import ProductSerializer, ProductListSerializer, ProductDetailsSerializer
 from rest_framework.response import Response
@@ -82,6 +83,12 @@ def admin_delete_product(request, pk):
         return Response({'Error': 'Product not found.'}, status=404) # 404 not found yani aradığın id yok diyebiliriz.
     product.delete()
     return Response({'message': 'Product Deleted'}, status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['GET'])
+def catalog_list_product_by_id(request, pk):
+    products= Product.objects.filter(category =pk) 
+    serializer = ProductListSerializer(products, many=True) 
+    return Response(serializer.data) 
 
 
 #SERILIZATION
