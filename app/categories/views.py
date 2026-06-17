@@ -6,14 +6,46 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
-class CategoryListAV(APIView):
 
-    #permission_classes=[IsAdminUser]
+class CatalogCategoryList(APIView):
 
     def get(self, request):
         categories= Category.objects.all()
         serializer = CategorySerializer(categories, many=True)
         return Response(serializer.data)
+        
+
+class AdminCategoryList(APIView):
+    permission_classes=[IsAdminUser]
+
+    def get(self, request):
+        categories= Category.objects.all()
+        serializer = CategorySerializer(categories, many=True)
+        return Response(serializer.data)
+
+
+class CatalogCategoryDetails(APIView):
+    def get(self, request, pk):
+        try:
+            category= Category.objects.get(pk=pk)
+        except Category.DoesNotExist:
+            return Response('Error: Category not found.', status=404)
+        serializer= CategorySerializer(category)
+        return Response(serializer.data)
+    
+class AdminCategoryDetails(APIView):
+    permission_classes=[IsAdminUser]
+
+    def get(self, request, pk):
+        try:
+            category= Category.objects.get(pk=pk)
+        except Category.DoesNotExist:
+            return Response('Error: Category not found.', status=404)
+        serializer= CategorySerializer(category)
+        return Response(serializer.data)
+
+class AdminCategoryCreate(APIView):
+    permission_classes=[IsAdminUser]
 
     def post(self, request):
         if not request.user.is_superuser:
@@ -25,15 +57,9 @@ class CategoryListAV(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-class CategoryDetailsAV(APIView):
-    def get(self, request, pk):
-        try:
-            category= Category.objects.get(pk=pk)
-        except Category.DoesNotExist:
-            return Response('Error: Category not found.', status=404)
-        serializer= CategorySerializer(category)
-        return Response(serializer.data)
-    
+class AdminCategoryEdit(APIView):
+    permission_classes=[IsAdminUser]
+
     def put(self, request, pk):
         category= Category.objects.get(pk=pk)
         serializer=CategorySerializer(category, data=request.data)
@@ -42,3 +68,23 @@ class CategoryDetailsAV(APIView):
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AdminCategoryDelete(APIView):
+    permission_classes=[IsAdminUser]
+
+    def delete(self, request, pk):
+        try:
+            category= Category.objects.get(pk=pk)
+        except Category.DoesNotExist:
+            return Response('Error: Category not found.', status=404)
+        category.delete()
+        return Response({'message': 'Category deleted.'}, status=status.HTTP_204_NO_CONTENT)
+
+
+
+
+
+
+
+

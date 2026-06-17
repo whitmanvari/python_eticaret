@@ -9,5 +9,4 @@ urlpatterns = [
     path('admin/create/', admin_create_product, name='admin_create_product'),
     path('admin/<int:pk>/edit/', admin_edit_product, name='admin_edit_product'),
     path('admin/<int:pk>/delete/', admin_delete_product, name='admin_delete_product'),
-
 ]
