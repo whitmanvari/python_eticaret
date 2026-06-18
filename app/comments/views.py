@@ -5,15 +5,15 @@ from .models import Comment
 from .serializers import CommentSerializer
 #from rest_framework import mixins
 
-#ListAPIView(mixins.ListModelMixin.GenericAPIView)---> list api view aslında mixins'in Listmodelmixin'inin generic api view'indne türemiştir. Mixin kullanmadan direkt yazılabiliyor.
-class CommentListView(generics.ListCreateAPIView):
-    queryset=Comment.objects.all()
+
+#ilgili id'ye göre comment listesini getir
+class CommentList(generics.ListAPIView):
     serializer_class= CommentSerializer
 
-    """#*args (Positional arguments / Konumsal argümanlar) ve kwargs (Keyword arguments / İsimli argümanlar), Python'da bir fonksiyona veya metoda esnek sayıda argüman gönderilmesini sağlayan yapılardır.
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
-    #çift yıldız dictionarye koy, tek yıldız tuple olarak al """
+    def get_queryset(self):
+        pk= self.kwargs['pk']
+        return Comment.objects.filter(product_id = pk)
+    
 
 class CommentListByProductView(generics.ListCreateAPIView):
     serializer_class= CommentSerializer
@@ -47,3 +47,15 @@ tek bir obje (dictionary) olarak döner.
 
 ListAPIView= GenericAPIView + ListModelMixin (listeleme yeteneği ekler)
 RetrieveAPIView=GenericAPIView + RetrieveModelMixin (tekil veri öekme yeteneği ekler)"""
+
+
+"""#ListAPIView(mixins.ListModelMixin.GenericAPIView)---> list api view aslında mixins'in Listmodelmixin'inin generic api view'indne türemiştir. Mixin kullanmadan direkt yazılabiliyor.
+class CommentListView(generics.ListCreateAPIView):
+    queryset=Comment.objects.all()
+    serializer_class= CommentSerializer
+
+    #*args (Positional arguments / Konumsal argümanlar) ve kwargs (Keyword arguments / İsimli argümanlar), Python'da bir fonksiyona veya metoda esnek sayıda argüman gönderilmesini sağlayan yapılardır.
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+    #çift yıldız dictionarye koy, tek yıldız tuple olarak al
+"""
