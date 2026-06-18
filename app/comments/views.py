@@ -1,9 +1,11 @@
 from django.shortcuts import render
-#from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework import generics
 from .models import Comment
 from .serializers import CommentSerializer
+from rest_framework.exceptions import ValidationError
 #from rest_framework import mixins
+#from rest_framework.views import APIView
 
 
 #ilgili id'ye göre comment listesini getir
@@ -14,21 +16,22 @@ class CommentList(generics.ListAPIView):
         pk= self.kwargs['pk']
         return Comment.objects.filter(product_id = pk)
     
-
-class CommentListByProductView(generics.ListCreateAPIView):
+class CommentCreate(generics.CreateAPIView):
     serializer_class= CommentSerializer
+    permission_classes = [IsAuthenticated]
 
-    #aslında url'den direkt id'yi alıyor burada. Örneğin comments/1/product şeklinde bir url'de keyword args aracılığı ile
-    #kwargs--> url'den 1 bilgiini alıyor bu da zaten product_id. Save ederken bu product_id'yi gönderirsek o product özelinde çalışacak. 
     def perform_create(self, serializer):
-        product_id= self.kwargs.get('pk')
-        serializer.save(product_id=product_id)
+        product_id= self.kwargs.get("pk")
+        user = self.request.user
 
-    def get_queryset(self):
-        pk=self.kwargs['pk']
-        return Comment.objects.filter(product_id=pk)
-    
-#get, put ve patch
+        #bir kullanıcı bir ürüne bir yorum yapsın
+        existing_comment= Comment.objects.filter(product_id=product_id, user=user)
+        if existing_comment.exists():
+            raise ValidationError({"message": "You have already commented this product."})
+
+        serializer.save(product_id=product_id, user=user)
+
+
 class CommentDetailsView(generics.RetrieveUpdateAPIView):
     queryset=Comment.objects.all()
     serializer_class= CommentSerializer
