@@ -2,8 +2,9 @@ from django.shortcuts import render
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import generics
 from .models import Comment
+from .models import Product
 from .serializers import CommentSerializer
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, PermissionDenied
 #from rest_framework import mixins
 #from rest_framework.views import APIView
 
@@ -29,16 +30,34 @@ class CommentCreate(generics.CreateAPIView):
         if existing_comment.exists():
             raise ValidationError({"message": "You have already commented this product."})
 
-        serializer.save(product_id=product_id, user=user)
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            raise ValidationError({"message": "Product not found."})
 
+        serializer.save(product=product, user=user)
 
-class CommentDetailsView(generics.RetrieveUpdateAPIView):
+class CommentEdit(generics.UpdateAPIView):
+    #hangi collection üzerinden bu bilgileri yazacağımızı belirtiyoruz. Edit yapacak kullanıcının da Authenticated olması gerekiyor.
     queryset=Comment.objects.all()
     serializer_class= CommentSerializer
+    permission_classes = [IsAuthenticated]
 
-class CommentDeleteView(generics.DestroyAPIView):
-    queryset=Comment.objects.all()
-    serializer_class= CommentSerializer
+    #GenericAPIView'den türeyen get_object() methodu, URL'den gelen pk veya slug gibi ID'yi kullanır. 
+    #Veritabanında sadece o ID' ye ait olan tek bir kaydı bulur ve tek bir obje (dictionary) olarak döner.
+    def get_object(self):
+        obj = super().get_object()
+        if obj.user != self.request.user:
+            raise PermissionDenied({"message": "You are not allowed to edit this comment."})
+        return obj
+
+# class CommentDetailsView(generics.RetrieveUpdateAPIView):
+#     queryset=Comment.objects.all()
+#     serializer_class= CommentSerializer
+
+# class CommentDeleteView(generics.DestroyAPIView):
+#     queryset=Comment.objects.all()
+#     serializer_class= CommentSerializer
 
 """ListAPIView---> veritabanındaki birden fazla objeyi listelemek için kullanılır. 
 Yaptığı: Veritabanından queryset'i çeker ve bunu serializer ile dönüştürür ve bir liste formatında döndürür. 

@@ -1,12 +1,13 @@
 from django.urls import path
-from .views import CommentList, CommentCreate
-# CommentDelete,CommentEdit
+from .views import CommentList, CommentCreate, CommentEdit
+# CommentDelete
 
 urlpatterns = [
-    path('product/<int:pk>', CommentList.as_view(), name='comment_list'),
-    path('<int:pk>/create', CommentCreate.as_view(), name='comment_create')
+    path('product/<int:pk>/', CommentList.as_view(), name='comment_list'),
+    path('<int:pk>/create/', CommentCreate.as_view(), name='comment_create'),
+    path('<int:pk>/edit/',CommentEdit.as_view(), name='comment_edit')
     #path('<int:pk>/delete',CommentDelete.as_view(), name='comment_delete'),
-    #path('<int:pk>/edit',CommentEdit.as_view(), name='comment_edit')
+   
 ]
 
 #comments/product/1 --> product comment listesi
