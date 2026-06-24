@@ -23,15 +23,16 @@ class AdminCommentList(generics.ListAPIView):
         return queryset.order_by('-update')
 
 
+class AdminCommentEdit(generics.UpdateAPIView):
+    queryset=Comment.objects.all()
+    serializer_class= CommentSerializer
+    permission_classes = [IsAdminUser]
 
 
-
-
-
-
-
-
-
+class AdminCommentDelete(generics.DestroyAPIView):
+    queryset=Comment.objects.all()
+    serializer_class= CommentSerializer
+    permission_classes = [IsAdminUser]
 
 
 #ilgili id'ye göre comment listesini getir

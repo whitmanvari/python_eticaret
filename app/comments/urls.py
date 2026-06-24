@@ -1,6 +1,5 @@
 from django.urls import path
-from .views import CommentList, CommentCreate, CommentEdit, CommentDelete, AdminCommentList
-# AdminCommentCreate, AdminCommentEdit, AdminCommentDelete
+from .views import CommentList, CommentCreate, CommentEdit, CommentDelete, AdminCommentList, AdminCommentEdit, AdminCommentDelete
 
 urlpatterns = [
     path('product/<int:pk>/', CommentList.as_view(), name='comment_list'),
@@ -10,8 +9,8 @@ urlpatterns = [
 
     path('admin/', AdminCommentList.as_view(), name='admin_comment_list'),
     path('admin/product/<int:pk>/', AdminCommentList.as_view(), name='admin_comment_list_product'),
-    # path('admin/<int:pk>/edit/',AdminCommentEdit.as_view(), name='admin_comment_edit'),
-    # path('admin/<int:pk>/delete/',AdminCommentDelete.as_view(), name='admin_comment_delete')
+    path('admin/<int:pk>/edit/',AdminCommentEdit.as_view(), name='admin_comment_edit'),
+    path('admin/<int:pk>/delete/',AdminCommentDelete.as_view(), name='admin_comment_delete')
    
 ]
 
