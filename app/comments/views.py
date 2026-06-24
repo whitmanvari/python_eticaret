@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import generics
 from .models import Comment
 from .models import Product
@@ -7,6 +7,31 @@ from .serializers import CommentSerializer
 from rest_framework.exceptions import ValidationError, PermissionDenied
 #from rest_framework import mixins
 #from rest_framework.views import APIView
+
+
+class AdminCommentList(generics.ListAPIView):
+    serializer_class= CommentSerializer
+    permission_classes = [IsAdminUser]  
+
+    def get_queryset(self):
+        pk= self.kwargs.get('pk')
+        queryset= Comment.objects.all()
+        if pk:
+            queryset= queryset.filter(product_id=pk)
+        
+        #en son güncellenen yorumlar en üstte görünsün diye '-update' ile sıraladım, eksi işareti ile descending sıralama yapıyoruz. 
+        return queryset.order_by('-update')
+
+
+
+
+
+
+
+
+
+
+
 
 
 #ilgili id'ye göre comment listesini getir
@@ -49,6 +74,17 @@ class CommentEdit(generics.UpdateAPIView):
         obj = super().get_object()
         if obj.user != self.request.user:
             raise PermissionDenied({"message": "You are not allowed to edit this comment."})
+        return obj
+    
+class CommentDelete(generics.DestroyAPIView):
+    queryset=Comment.objects.all()
+    serializer_class= CommentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        obj = super().get_object()
+        if obj.user != self.request.user:
+            raise PermissionDenied({"message": "You are not allowed to delete this comment."})
         return obj
 
 # class CommentDetailsView(generics.RetrieveUpdateAPIView):
