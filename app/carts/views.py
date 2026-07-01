@@ -31,7 +31,7 @@ class AddToCartView(APIView):
 
         return Response({"message": "Product added to cart"}, status=status.HTTP_200_OK)
 
-#generic üzerinden alabiliriz
+#generic üzerinden alabiliriz, get isteği oluşturacak
 class CartDetailView(generics.RetrieveAPIView):
     serializer_class = CartSerializer
     permission_classes = [IsAuthenticated]
@@ -40,3 +40,14 @@ class CartDetailView(generics.RetrieveAPIView):
         #tuple döndürüyor. Eğer cart yoksa yeni cart oluşturacak. Eğer varsa onu döndürecek.
         cart, created = Cart.objects.get_or_create(user=self.request.user)
         return cart
+
+class UpdateCartItemView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request, pk):
+        cart_item = CartItem.objects.get(pk=pk, cart__user=request.user)
+        quantity = request.data.get('quantity')
+        cart_item.quantity = quantity
+        cart_item.save()
+        return Response({"message": "Cart item updated"}, status=status.HTTP_200_OK)
+    
